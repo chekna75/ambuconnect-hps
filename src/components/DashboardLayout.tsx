@@ -4,9 +4,11 @@ import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { Menu, X, LayoutDashboard, CalendarDays, PlusSquare, LogOut } from 'lucide-react'; // Using lucide-react icons
 import { useWebSocketNotifications } from 'utils/notificationService'; // Import the hook
+import { ChatPopover } from './Chat/ChatPopover';
 
 interface Props {
   children: React.ReactNode;
+  etablissementId?: string;
 }
 
 // Define navigation items
@@ -16,7 +18,7 @@ const navItems = [
   { name: 'Calendar', path: '/calendar', icon: CalendarDays },
 ];
 
-export const DashboardLayout = ({ children }: Props) => {
+export const DashboardLayout = ({ children, etablissementId }: Props) => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const location = useLocation();
   
@@ -53,8 +55,12 @@ export const DashboardLayout = ({ children }: Props) => {
             </NavLink>
           ))}
         </nav>
-        {/* Optional: Add footer or logout button to sidebar */}
-         <div className="p-4 border-t border-gray-200 mt-auto">
+        <div className="p-4 border-t border-gray-200">
+          {etablissementId && (
+            <ChatPopover etablissementId={etablissementId} />
+          )}
+        </div>
+        <div className="p-4 border-t border-gray-200">
           <Button variant="ghost" className="w-full justify-start text-gray-600 hover:bg-gray-100 hover:text-ambu-dark">
             <LogOut className="mr-3 h-5 w-5 text-gray-400 group-hover:text-ambu-dark" />
             Logout (Placeholder)
@@ -69,46 +75,50 @@ export const DashboardLayout = ({ children }: Props) => {
             <div className="text-ambu-blue font-bold text-lg mr-1">Ambu</div>
             <div className="text-ambu-dark font-bold text-lg">Connect</div>
           </div>
-          <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
-            <SheetTrigger asChild>
-              <Button variant="ghost" size="icon">
-                <Menu className="h-6 w-6 text-ambu-dark" />
-                <span className="sr-only">Open menu</span>
-              </Button>
-            </SheetTrigger>
-            <SheetContent side="left" className="w-64 p-0">
-              {/* Mobile Menu Content (Sidebar Replica) */}
-              <div className="flex items-center justify-between h-16 border-b border-gray-200 px-4 bg-ambu-dark">
-                 <div className="flex items-center">
-                    <div className="text-ambu-blue font-bold text-lg mr-1">Ambu</div>
-                    <div className="text-white font-bold text-lg">Connect</div>
-                 </div>
-                 <Button variant="ghost" size="icon" onClick={() => setIsMobileMenuOpen(false)}>
-                   <X className="h-6 w-6 text-white" />
-                   <span className="sr-only">Close menu</span>
-                 </Button>
-              </div>
-              <nav className="flex-1 overflow-y-auto p-4 space-y-2">
-                {navItems.map((item) => (
-                  <NavLink 
-                    key={item.name} 
-                    to={item.path} 
-                    className={linkClasses(item.path)}
-                    onClick={() => setIsMobileMenuOpen(false)} // Close menu on navigation
-                  >
-                    <item.icon className={iconClasses(item.path)} aria-hidden="true" />
-                    {item.name}
-                  </NavLink>
-                ))}
-              </nav>
-              <div className="p-4 border-t border-gray-200 mt-auto">
-                <Button variant="ghost" className="w-full justify-start text-gray-600 hover:bg-gray-100 hover:text-ambu-dark">
-                  <LogOut className="mr-3 h-5 w-5 text-gray-400 group-hover:text-ambu-dark" />
-                  Logout (Placeholder)
+          <div className="flex items-center space-x-4">
+            {etablissementId && (
+              <ChatPopover etablissementId={etablissementId} />
+            )}
+            <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
+              <SheetTrigger asChild>
+                <Button variant="ghost" size="icon">
+                  <Menu className="h-6 w-6 text-ambu-dark" />
+                  <span className="sr-only">Open menu</span>
                 </Button>
-              </div>
-            </SheetContent>
-          </Sheet>
+              </SheetTrigger>
+              <SheetContent side="left" className="w-64 p-0">
+                <div className="flex items-center justify-between h-16 border-b border-gray-200 px-4 bg-ambu-dark">
+                   <div className="flex items-center">
+                      <div className="text-ambu-blue font-bold text-lg mr-1">Ambu</div>
+                      <div className="text-white font-bold text-lg">Connect</div>
+                   </div>
+                   <Button variant="ghost" size="icon" onClick={() => setIsMobileMenuOpen(false)}>
+                     <X className="h-6 w-6 text-white" />
+                     <span className="sr-only">Close menu</span>
+                   </Button>
+                </div>
+                <nav className="flex-1 overflow-y-auto p-4 space-y-2">
+                  {navItems.map((item) => (
+                    <NavLink 
+                      key={item.name} 
+                      to={item.path} 
+                      className={linkClasses(item.path)}
+                      onClick={() => setIsMobileMenuOpen(false)}
+                    >
+                      <item.icon className={iconClasses(item.path)} aria-hidden="true" />
+                      {item.name}
+                    </NavLink>
+                  ))}
+                </nav>
+                <div className="p-4 border-t border-gray-200 mt-auto">
+                  <Button variant="ghost" className="w-full justify-start text-gray-600 hover:bg-gray-100 hover:text-ambu-dark">
+                    <LogOut className="mr-3 h-5 w-5 text-gray-400 group-hover:text-ambu-dark" />
+                    Logout (Placeholder)
+                  </Button>
+                </div>
+              </SheetContent>
+            </Sheet>
+          </div>
         </header>
 
         {/* Main Content Area */}

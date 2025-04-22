@@ -1,9 +1,11 @@
-import React from "react";
-import { Header } from "components/Header";
-import { CTAButton } from "components/CTAButton";
-import { CheckCircle, Clock, Shield, Users, ChevronDown } from 'lucide-react';
-import { motion, Variants } from "framer-motion";
-import { useState } from "react";
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Variants, motion } from 'framer-motion';
+import { CheckCircle, ChevronDown, Clock, Shield, Users } from 'lucide-react';
+import { CTAButton } from './CTAButton';
+import { Header } from './Header';
 
 // Définition des couleurs principales
 const colors = {
@@ -97,10 +99,10 @@ const FAQItem = ({ question, answer }: { question: string; answer: string }) => 
   );
 };
 
-export default function App() {
+export function HomePage() {
   return (
     <div className="flex flex-col min-h-screen bg-white">
-      <Header />
+
       
       {/* Section Hero */}
       <motion.section 
@@ -315,4 +317,4 @@ export default function App() {
       </footer>
     </div>
   );
-}
+} 

@@ -4,15 +4,18 @@
 
 
 @layer base {
-  /* AmbuConnect Brand Colors */
+  /* Couleurs principales */
   :root {
-    --ambu-blue: 195 100% 50%;
-    --ambu-blue-dark: 195 100% 45%;
-    --ambu-blue-light: 195 100% 85%;
-    --ambu-dark: 220 30% 15%;
-  }
-  
-  :root {
+    --color-primary: 124, 193, 216; /* #7CC1D8 */
+    --color-primary-light: 2, 48, 71; /* #023047 */
+    --color-primary-dark: 90, 143, 158; /* #5A8F9E */
+    --color-gray: 51, 51, 51; /* #333333 */
+    --color-secondary: 42, 76, 86; /* #2A4C56 */
+    
+    /* Anciennes variables renommées pour utiliser la nouvelle palette */
+    --ambu-blue: var(--color-primary);
+    --ambu-blue-dark: var(--color-primary-dark);
+    --ambu-blue-light: var(--color-primary-light);
     --background: 0 0% 100%;
     --foreground: 240 10% 3.9%;
     --card: 0 0% 100%;

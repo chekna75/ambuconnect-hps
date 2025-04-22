@@ -3,7 +3,12 @@ const { fontFamily } = require("tailwindcss/defaultTheme");
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   darkMode: ["class"],
-  content: ["./index.html", "./src/**/*.{js,ts,jsx,tsx}"],
+  content: [
+    './src/components/**/*.{ts,tsx}',
+    './src/pages/**/*.{ts,tsx}',
+    './src/app/**/*.{ts,tsx}',
+    './src/**/*.{ts,tsx}',
+  ],
   theme: {
     container: {
       center: true,
@@ -14,6 +19,18 @@ module.exports = {
     },
     extend: {
       colors: {
+        // Nouvelle palette de couleurs AmbuConnect
+        primary: "rgb(var(--color-primary))",
+        "primary-light": "rgb(var(--color-primary-light))",
+        "primary-dark": "rgb(var(--color-primary-dark))",
+        gray: "rgb(var(--color-gray))",
+        secondary: "rgb(var(--color-secondary))",
+        
+        // Garder les anciennes couleurs pour la rétrocompatibilité
+        "ambu-blue": "rgb(var(--color-primary))",
+        "ambu-blue-dark": "rgb(var(--color-primary-dark))",
+        "ambu-blue-light": "rgb(var(--color-primary-light))",
+        
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",
@@ -47,11 +64,6 @@ module.exports = {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
-        // AmbuConnect Brand Colors
-        "ambu-blue": "hsl(var(--ambu-blue))",
-        "ambu-blue-dark": "hsl(var(--ambu-blue-dark))",
-        "ambu-blue-light": "hsl(var(--ambu-blue-light))",
-        "ambu-dark": "hsl(var(--ambu-dark))",
       },
       borderRadius: {
         lg: "var(--radius)",
@@ -60,6 +72,20 @@ module.exports = {
       },
       fontFamily: {
         sans: ["Inter var", ...fontFamily.sans],
+      },
+      keyframes: {
+        "accordion-down": {
+          from: { height: 0 },
+          to: { height: "var(--radix-accordion-content-height)" },
+        },
+        "accordion-up": {
+          from: { height: "var(--radix-accordion-content-height)" },
+          to: { height: 0 },
+        },
+      },
+      animation: {
+        "accordion-down": "accordion-down 0.2s ease-out",
+        "accordion-up": "accordion-up 0.2s ease-out",
       },
     },
   },
