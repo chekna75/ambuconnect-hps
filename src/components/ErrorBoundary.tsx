@@ -1,64 +1,73 @@
-import React, { Component, ErrorInfo, ReactNode } from 'react';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { Component, ErrorInfo, ReactNode } from 'react';
+import { isRouteErrorResponse, useRouteError } from 'react-router-dom';
+import { AlertCircle } from 'lucide-react';
 
 interface Props {
-  children: ReactNode;
-  fallback?: ReactNode;
+  children?: ReactNode;
 }
 
 interface State {
   hasError: boolean;
-  error: Error | null;
 }
 
+// Composant pour afficher l'erreur
+function ErrorDisplay({ error }: { error: Error | null }) {
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-background">
+      <div className="max-w-md w-full p-6 text-center">
+        <div className="flex justify-center mb-6">
+          <AlertCircle className="h-12 w-12 text-destructive" />
+        </div>
+        <h1 className="text-2xl font-bold text-foreground mb-3">
+          Oups ! Une erreur est survenue
+        </h1>
+        <p className="text-muted-foreground mb-6">
+          {error?.message || "Une erreur inattendue s'est produite."}
+        </p>
+        <button
+          onClick={() => window.location.reload()}
+          className="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2"
+        >
+          Recharger la page
+        </button>
+      </div>
+    </div>
+  );
+}
+
+// Composant pour les erreurs de route
+export function RouteErrorBoundary() {
+  const error = useRouteError();
+  let errorMessage = "Une erreur inattendue s'est produite";
+
+  if (isRouteErrorResponse(error)) {
+    errorMessage = error.statusText;
+  } else if (error instanceof Error) {
+    errorMessage = error.message;
+  } else if (typeof error === 'string') {
+    errorMessage = error;
+  }
+
+  return <ErrorDisplay error={new Error(errorMessage)} />;
+}
+
+// Composant pour les erreurs React
 export class ErrorBoundary extends Component<Props, State> {
   public state: State = {
-    hasError: false,
-    error: null
+    hasError: false
   };
 
-  public static getDerivedStateFromError(error: Error): State {
-    return { hasError: true, error };
+  public static getDerivedStateFromError(_: Error): State {
+    return { hasError: true };
   }
 
   public componentDidCatch(error: Error, errorInfo: ErrorInfo) {
-    console.error('Erreur attrapée par ErrorBoundary:', error, errorInfo);
+    console.error('Uncaught error:', error, errorInfo);
   }
-
-  private handleRetry = () => {
-    this.setState({ hasError: false, error: null });
-    window.location.reload();
-  };
 
   public render() {
     if (this.state.hasError) {
-      return this.props.fallback || (
-        <div className="min-h-screen flex items-center justify-center bg-gray-50">
-          <Card className="w-full max-w-md mx-4">
-            <CardHeader>
-              <CardTitle className="text-red-600">
-                Oups ! Une erreur est survenue
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-gray-600 mb-4">
-                Nous sommes désolés, mais quelque chose s'est mal passé.
-              </p>
-              {this.state.error && (
-                <pre className="bg-gray-100 p-4 rounded-md text-sm overflow-auto max-h-40">
-                  {this.state.error.message}
-                </pre>
-              )}
-            </CardContent>
-            <CardFooter>
-              <Button onClick={this.handleRetry} className="w-full">
-                Réessayer
-              </Button>
-            </CardFooter>
-          </Card>
-        </div>
-      );
+      return <ErrorDisplay error={new Error("Une erreur inattendue s'est produite")} />;
     }
 
     return this.props.children;

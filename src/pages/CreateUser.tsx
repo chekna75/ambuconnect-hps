@@ -23,7 +23,7 @@ import {
 import { toast } from '@/components/ui/use-toast';
 import { User, Phone, Mail, Lock, Building2, Loader2 } from 'lucide-react';
 import { etablissementService } from '@/services/etablissement/etablissementService';
-import { userService } from '@/services/user/userService';
+import userService from '@/services/user/userService';
 
 const userSchema = z.object({
   nom: z.string().min(2, 'Le nom doit contenir au moins 2 caractères'),

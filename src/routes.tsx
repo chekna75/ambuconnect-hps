@@ -1,6 +1,8 @@
 import { lazy } from 'react';
 import { createBrowserRouter } from 'react-router-dom';
 import { Layout } from './components/Layout';
+import { ProtectedRoute } from './components/ProtectedRoute';
+import { RouteErrorBoundary } from './components/ErrorBoundary';
 
 // Chargement paresseux des composants
 const Dashboard = lazy(() => import('./pages/Dashboard'));
@@ -10,28 +12,46 @@ const Contact = lazy(() => import('./pages/Contact'));
 const Home = lazy(() => import('./pages/Home'));
 const CreateEtablissement = lazy(() => import('./pages/CreateEtablissement'));
 const CreateUser = lazy(() => import('./pages/CreateUser'));
+const Login = lazy(() => import('./pages/Login'));
 
 // Configuration des routes
-const appRouter = createBrowserRouter([
+export const router = createBrowserRouter([
   {
     path: '/',
     element: <Layout />,
+    errorElement: <RouteErrorBoundary />,
     children: [
       {
         path: '/',
         element: <Home />,
       },
       {
+        path: '/login',
+        element: <Login />,
+      },
+      {
         path: '/dashboard',
-        element: <Dashboard />,
+        element: (
+          <ProtectedRoute>
+            <Dashboard />
+          </ProtectedRoute>
+        ),
       },
       {
         path: '/calendar',
-        element: <Calendar />,
+        element: (
+          <ProtectedRoute>
+            <Calendar />
+          </ProtectedRoute>
+        ),
       },
       {
         path: '/create-transport',
-        element: <CreateRequest />,
+        element: (
+          <ProtectedRoute>
+            <CreateRequest />
+          </ProtectedRoute>
+        ),
       },
       {
         path: '/contact',
@@ -39,11 +59,15 @@ const appRouter = createBrowserRouter([
       },
       {
         path: '/create-etablissement',
-        element: <CreateEtablissement />,
+        element: (
+            <CreateEtablissement />
+        ),
       },
       {
         path: '/create-user',
-        element: <CreateUser />,
+        element: (
+            <CreateUser />
+        ),
       },
       {
         path: '*',
@@ -53,6 +77,4 @@ const appRouter = createBrowserRouter([
       },
     ],
   },
-]);
-
-export default appRouter; 
+]); 

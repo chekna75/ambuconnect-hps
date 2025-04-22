@@ -170,6 +170,7 @@ const Contact = () => {
                       onChange={handleChange}
                     >
                       <option value="">Sélectionnez un sujet</option>
+                      <option value="creation-compte">Demande de création de compte</option>
                       <option value="support">Support technique</option>
                       <option value="commercial">Question commerciale</option>
                       <option value="partenariat">Partenariat</option>

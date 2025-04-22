@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { EtablissementFormValues } from '@/pages/CreateEtablissement';
 
-const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:3000/api';
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
 
 export const etablissementService = {
   async createEtablissement(data: EtablissementFormValues) {

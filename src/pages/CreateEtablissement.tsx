@@ -50,7 +50,14 @@ export default function CreateEtablissementPage() {
   const form = useForm<EtablissementFormValues>({
     resolver: zodResolver(etablissementSchema),
     defaultValues: {
+      nom: '',
       type: 'hopital',
+      telephone: '',
+      email: '',
+      adresse: '',
+      codePostal: '',
+      ville: '',
+      siret: '',
       description: '',
     },
   });
@@ -286,7 +293,7 @@ export default function CreateEtablissementPage() {
                     Création en cours...
                   </>
                 ) : (
-                  'Créer l'établissement'
+                  `Créer l'établissement`
                 )}
               </Button>
             </div>
