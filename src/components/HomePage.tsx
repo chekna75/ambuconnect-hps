@@ -1,11 +1,7 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { useState } from 'react';
 import { Variants, motion } from 'framer-motion';
 import { CheckCircle, ChevronDown, Clock, Shield, Users } from 'lucide-react';
 import { CTAButton } from './CTAButton';
-import { Header } from './Header';
 
 // Définition des couleurs principales
 const colors = {
