@@ -24,7 +24,7 @@ export const useEtablissement = (id?: string) => {
   // Mettre à jour un établissement
   const updateMutation = useMutation({
     mutationFn: (data: UpdateEtablissementDTO) => 
-      etablissementService.updateEtablissement(Number(id!), data),
+      etablissementService.updateEtablissement((id!), data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['etablissement', id] });
       queryClient.invalidateQueries({ queryKey: ['etablissements'] });

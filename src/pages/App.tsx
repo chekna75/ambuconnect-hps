@@ -4,6 +4,7 @@ import { motion, Variants } from "framer-motion";
 import { useState } from "react";
 import { CTAButton } from "@/components/CTAButton";
 import { Header } from "@radix-ui/react-accordion";
+import { Toaster } from 'sonner';
 
 // Définition des couleurs principales
 const colors = {
@@ -101,6 +102,7 @@ export default function App() {
   return (
     <div className="flex flex-col min-h-screen bg-white">
       <Header />
+      <Toaster position="top-right" richColors />
       
       {/* Section Hero */}
       <motion.section 

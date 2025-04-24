@@ -65,35 +65,60 @@ export default function CreateEtablissementPage() {
   const onSubmit = async (data: EtablissementFormValues) => {
     try {
       setIsSubmitting(true);
+      
       const formattedData = {
         nom: data.nom,
         typeEtablissement: data.type.toUpperCase() as 'HOPITAL' | 'CLINIQUE' | 'EHPAD' | 'CABINET_MEDICAL' | 'CENTRE_REEDUCATION',
         adresse: `${data.adresse}, ${data.codePostal} ${data.ville}`,
         emailContact: data.email,
         telephoneContact: data.telephone,
-        responsableReferentId: 'default', // À remplacer par l'ID du responsable
+        responsableReferentId: '2662ba15-7b72-4d8d-acad-faf7ba71fff5',
         siret: data.siret,
         description: data.description
       };
-      const result = await EtablissementService.getInstance().createEtablissement(formattedData);
-      
-      toast.success('Établissement créé avec succès', {
-        description: `L'établissement "${data.nom}" a été créé et enregistré dans la base de données.`,
-        duration: 5000,
+
+      const response = await fetch(`https://ambuconnect-api-recette.up.railway.app/etablissements`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formattedData),
       });
 
-      // Redirection vers le tableau de bord après création
-      navigate('/dashboard', { 
-        state: { 
-          message: 'Établissement créé avec succès',
-          etablissementId: result.data.id 
-        } 
-      });
-    } catch (error) {
+      console.log('Status de la réponse:', response.status);
+      
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => null);
+        console.error('Erreur détaillée:', errorData);
+        
+        if (response.status === 403) {
+          throw new Error('Non autorisé : Veuillez vous reconnecter');
+        }
+        
+        throw new Error(errorData?.message || `Erreur ${response.status}`);
+      }
+
+      const result = await response.json();
+      
+      if (result?.data?.id) {
+        toast.success('Établissement créé avec succès', {
+          description: `L'établissement "${data.nom}" a été créé et enregistré dans la base de données.`,
+          duration: 5000,
+        });
+
+        navigate('/create-user', { 
+          state: { 
+            message: 'Établissement créé avec succès',
+            etablissementId: result.data.id 
+          } 
+        });
+      } else {
+        throw new Error('Réponse invalide du serveur');
+      }
+    } catch (error: any) {
+      console.error('Erreur complète:', error);
       toast.error('Échec de la création', {
-        description: error instanceof Error 
-          ? `Une erreur est survenue : ${error.message}`
-          : 'Une erreur inattendue est survenue lors de la création de l\'établissement.',
+        description: error.message || 'Une erreur est survenue lors de la création de l\'établissement',
         duration: 7000,
       });
     } finally {

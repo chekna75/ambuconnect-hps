@@ -32,7 +32,7 @@ export const useEtablissementUsers = (etablissementId: string) => {
   });
 
   return {
-    utilisateurs: utilisateurs?.data,
+    utilisateurs,
     isLoading,
     error,
     createUser: createMutation.mutate,

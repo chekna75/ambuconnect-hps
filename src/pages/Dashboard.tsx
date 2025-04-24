@@ -1,11 +1,12 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { RecentTransportsList } from "@/components/RecentTransportsList";
 import { DashboardLayout } from "@/components/DashboardLayout";
 import { StatCard } from "@/components/StatCard";
 import { DashboardStats, TransportListItem } from "@/utils/types";
 import { Clock, CalendarCheck, CalendarClock, Percent, BarChartHorizontal, PlusCircle, CalendarDays } from 'lucide-react';
 import { Button } from "@/components/ui/button";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
+import { toast } from "sonner";
 
 // Pour le développement, on utilise un ID d'établissement de test
 const MOCK_ETABLISSEMENT_ID = "123e4567-e89b-12d3-a456-426614174000";
@@ -52,6 +53,16 @@ const mockRecentTransports: TransportListItem[] = [
 ];
 
 export default function DashboardPage() {
+  const location = useLocation();
+
+  useEffect(() => {
+    if (location.state?.successMessage) {
+      toast.success(location.state.successMessage);
+      // Nettoyer l'état de la location pour éviter de réafficher le message
+      window.history.replaceState({}, document.title);
+    }
+  }, [location.state]);
+
   // Dans une vraie application, récupérer l'ID de l'établissement depuis le contexte d'authentification
   const etablissementId = MOCK_ETABLISSEMENT_ID;
   const stats = mockStats;
