@@ -1,9 +1,10 @@
+import { BaseService } from '../base/BaseService';
 import { Message } from '../etablissement/types';
 
 type MessageCallback = (message: Message) => void;
 type ConnectionCallback = () => void;
 
-export class WebSocketService {
+export class WebSocketService extends BaseService {
   private static instance: WebSocketService;
   private socket: WebSocket | null = null;
   private messageCallbacks: Set<MessageCallback> = new Set();
@@ -14,7 +15,9 @@ export class WebSocketService {
   private readonly reconnectDelay = 1000;
   private etablissementId: string | null = null;
 
-  private constructor() {}
+  private constructor() {
+    super();
+  }
 
   public static getInstance(): WebSocketService {
     if (!WebSocketService.instance) {
@@ -29,8 +32,7 @@ export class WebSocketService {
     }
 
     this.etablissementId = etablissementId;
-    const wsUrl = `${this.getWebSocketUrl()}/api/v1/etablissements/${etablissementId}/messages/ws`;
-    
+    const wsUrl = this.api.defaults.baseURL?.replace('http', 'ws') || '';
     this.socket = new WebSocket(wsUrl);
     this.setupSocketListeners();
   }
@@ -102,9 +104,9 @@ export class WebSocketService {
     }
   }
 
-  private getWebSocketUrl(): string {
-    const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-    const host = window.location.host;
-    return `${protocol}//${host}`;
+  public sendMessage(message: any): void {
+    if (this.socket && this.socket.readyState === WebSocket.OPEN) {
+      this.socket.send(JSON.stringify(message));
+    }
   }
 } 

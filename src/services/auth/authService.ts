@@ -19,6 +19,18 @@ export interface AuthResponse {
   token: string;
 }
 
+export interface UtilisateurEtablissementDto {
+  id?: string;  // Optionnel lors de la création
+  etablissementId: string;
+  email: string;
+  motDePasse: string;
+  nom: string;
+  prenom: string;
+  telephone: string;
+  role: string; // Vous pouvez définir un enum pour RoleUtilisateur selon votre besoin
+  actif: boolean;
+}
+
 export const authService = {
   async login(credentials: LoginCredentials): Promise<AuthResponse> {
     try {
@@ -54,4 +66,6 @@ export const authService = {
       throw error;
     }
   },
+
+  
 }; 

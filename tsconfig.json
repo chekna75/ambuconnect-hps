@@ -27,17 +27,16 @@
       "@/services/*": ["./src/services/*"],
       "@/internal-components/*": ["./src/components/*"],
       "@/prod-components/*": ["./src/components/error-boundary/*"]
-    }
+    },
+    "types": ["vite/client", "node"]
   },
   "include": [
     "env.d.ts",
     "src"
   ],
   "exclude": [
-    "src/brain/Brain.ts",
-    "src/brain/BrainRoute.ts",
-    "src/brain/data-contracts.ts",
-    "src/dev-components/**/*"
+    "node_modules",
+    "dist"
   ],
   "references": [
     {

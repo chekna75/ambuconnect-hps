@@ -1,6 +1,7 @@
 import { AxiosError } from 'axios';
 import { BaseService, ApiResponse } from '../base/BaseService';
 import { User } from '../auth/AuthService';
+import { UtilisateurEtablissementDto, CreateUserResponse } from './types';
 
 export interface CreateUserData {
   email: string;
@@ -17,7 +18,7 @@ export interface UpdateUserData {
   etablissementId?: number;
 }
 
-class UserService extends BaseService {
+export class UserService extends BaseService {
   private static instance: UserService;
 
   private constructor() {
@@ -31,11 +32,17 @@ class UserService extends BaseService {
     return UserService.instance;
   }
 
-  async createUser(userData: CreateUserData): Promise<ApiResponse<User>> {
+  async createUser(
+    etablissementId: string,
+    userData: Omit<UtilisateurEtablissementDto, 'etablissementId'>
+  ): Promise<CreateUserResponse> {
     try {
-      const response = await this.api.post<ApiResponse<User>>(
-        '/users',
-        userData
+      const response = await this.api.post<CreateUserResponse>(
+        `/etablissements/${etablissementId}/utilisateurs`,
+        {
+          ...userData,
+          etablissementId
+        }
       );
       return response.data;
     } catch (error) {

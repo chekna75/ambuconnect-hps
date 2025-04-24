@@ -21,7 +21,7 @@ export class ApiError extends Error {
 export abstract class BaseService {
   protected readonly api: AxiosInstance;
   
-  constructor(baseURL: string = import.meta.env.VITE_API_URL) {
+  constructor(baseURL: string = 'https://ambuconnect-api-recette.up.railway.app') {
     this.api = axios.create({
       baseURL,
       timeout: 15000,
