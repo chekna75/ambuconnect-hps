@@ -3,12 +3,10 @@
 import { lazy } from "react";
 import { RouteObject } from "react-router";
 
-
-
-const App = lazy(() => import("./pages/App.tsx"));
-const Calendar = lazy(() => import("./pages/Calendar.tsx"));
-const CreateRequest = lazy(() => import("./pages/CreateRequest.tsx"));
-const Dashboard = lazy(() => import("./pages/Dashboard.tsx"));
+import App from "./pages/App";
+import Calendar from "./pages/Calendar";
+import CreateRequest from "./pages/CreateRequest";
+import Dashboard from "./pages/Dashboard";
 
 export const userRoutes: RouteObject[] = [
 

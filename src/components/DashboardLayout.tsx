@@ -3,7 +3,7 @@ import { NavLink, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { Menu, X, LayoutDashboard, CalendarDays, PlusSquare, LogOut } from 'lucide-react'; // Using lucide-react icons
-import { useWebSocketNotifications } from 'utils/notificationService'; // Import the hook
+import { useWebSocketNotifications } from '@/services/notificationService'; // Import the hook
 import { ChatPopover } from './Chat/ChatPopover';
 
 interface Props {

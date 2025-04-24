@@ -1,25 +1,25 @@
-import { z } from 'zod';
+import { AxiosError } from 'axios';
 import { BaseService, ApiResponse } from '../base/BaseService';
 
-// Schémas de validation
-const loginSchema = z.object({
-  email: z.string().email(),
-  password: z.string().min(6)
-});
+export interface LoginCredentials {
+  email: string;
+  password: string;
+}
 
-const tokenSchema = z.object({
-  access_token: z.string(),
-  refresh_token: z.string(),
-  expires_in: z.number()
-});
+export interface User {
+  id: number;
+  email: string;
+  name: string;
+  role: string;
+}
 
-// Types
-export type LoginCredentials = z.infer<typeof loginSchema>;
-export type TokenResponse = z.infer<typeof tokenSchema>;
+export interface AuthResponse {
+  user: User;
+  token: string;
+}
 
 export class AuthService extends BaseService {
   private static instance: AuthService;
-  private refreshTokenTimeout?: NodeJS.Timeout;
 
   private constructor() {
     super();
@@ -32,77 +32,43 @@ export class AuthService extends BaseService {
     return AuthService.instance;
   }
 
-  async login(credentials: LoginCredentials): Promise<ApiResponse<TokenResponse>> {
-    // Valider les données d'entrée
-    this.validate(loginSchema, credentials);
-
-    const response = await this.api.post<TokenResponse>('/auth/login', credentials);
-    const tokens = this.validate(tokenSchema, response.data);
-
-    // Sauvegarder les tokens
-    this.setTokens(tokens);
-
-    return {
-      data: tokens,
-      status: response.status
-    };
+  async login(credentials: LoginCredentials): Promise<ApiResponse<AuthResponse>> {
+    try {
+      const response = await this.api.post<ApiResponse<AuthResponse>>(
+        '/auth/login',
+        credentials
+      );
+      const { token } = response.data.data;
+      localStorage.setItem('token', token);
+      return response.data;
+    } catch (error) {
+      throw this.handleError(error as AxiosError);
+    }
   }
 
   async logout(): Promise<void> {
     try {
       await this.api.post('/auth/logout');
-    } finally {
-      this.clearTokens();
-    }
-  }
-
-  async refreshToken(): Promise<void> {
-    const refresh_token = localStorage.getItem('refresh_token');
-    if (!refresh_token) {
-      throw new Error('No refresh token available');
-    }
-
-    try {
-      const response = await this.api.post<TokenResponse>('/auth/refresh', {
-        refresh_token
-      });
-      const tokens = this.validate(tokenSchema, response.data);
-      this.setTokens(tokens);
+      localStorage.removeItem('token');
     } catch (error) {
-      this.clearTokens();
-      throw error;
+      throw this.handleError(error as AxiosError);
     }
   }
 
-  private setTokens(tokens: TokenResponse): void {
-    localStorage.setItem('token', tokens.access_token);
-    localStorage.setItem('refresh_token', tokens.refresh_token);
-
-    // Configurer le rafraîchissement automatique
-    this.setupRefreshTokenTimer(tokens.expires_in);
-  }
-
-  private clearTokens(): void {
-    localStorage.removeItem('token');
-    localStorage.removeItem('refresh_token');
-    if (this.refreshTokenTimeout) {
-      clearTimeout(this.refreshTokenTimeout);
+  async getCurrentUser(): Promise<ApiResponse<User>> {
+    try {
+      const response = await this.api.get<ApiResponse<User>>('/auth/me');
+      return response.data;
+    } catch (error) {
+      throw this.handleError(error as AxiosError);
     }
-  }
-
-  private setupRefreshTokenTimer(expiresIn: number): void {
-    if (this.refreshTokenTimeout) {
-      clearTimeout(this.refreshTokenTimeout);
-    }
-
-    // Rafraîchir le token 1 minute avant l'expiration
-    const timeout = (expiresIn - 60) * 1000;
-    this.refreshTokenTimeout = setTimeout(() => {
-      this.refreshToken().catch(console.error);
-    }, timeout);
   }
 
   isAuthenticated(): boolean {
     return !!localStorage.getItem('token');
   }
-} 
+
+  getToken(): string | null {
+    return localStorage.getItem('token');
+  }
+}

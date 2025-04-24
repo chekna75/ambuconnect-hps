@@ -1,13 +1,13 @@
 import React, { useState, useMemo, useCallback } from 'react'; // Import useCallback
-import { Calendar, dateFnsLocalizer, Views } from 'react-big-calendar';
-import format from 'date-fns/format';
-import parse from 'date-fns/parse';
-import startOfWeek from 'date-fns/startOfWeek';
-import getDay from 'date-fns/getDay';
-import parseISO from 'date-fns/parseISO';
-import addHours from 'date-fns/addHours';
-import fr from 'date-fns/locale/fr'; // Ajout de la locale française
-import { useTransportData } from '../utils/transportService'; // Correction du chemin d'importation
+import { Calendar, dateFnsLocalizer, Views, View } from 'react-big-calendar';
+import { format } from 'date-fns/format';
+import { parse } from 'date-fns/parse';
+import { startOfWeek } from 'date-fns/startOfWeek';
+import { getDay } from 'date-fns/getDay';
+import { parseISO } from 'date-fns/parseISO';
+import { addHours } from 'date-fns/addHours';
+import { fr } from 'date-fns/locale/fr'; // Ajout de la locale française
+import { useTransportData } from '../services/transportService'; // Correction du chemin d'importation
 import 'react-big-calendar/lib/css/react-big-calendar.css'; // Import calendar styles
 import { DashboardLayout } from '../components/DashboardLayout'; // Correction du chemin d'importation
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -58,7 +58,7 @@ const mockEvents: CalendarEvent[] = [
 ];
 
 export default function CalendarPage() {
-  const [currentView, setCurrentView] = useState<keyof typeof Views>(Views.WEEK);
+  const [currentView, setCurrentView] = useState<View>(Views.WEEK);
   const [selectedStatus, setSelectedStatus] = useState<string>('all');
   const [selectedCompany, setSelectedCompany] = useState<string>('all');
 
@@ -198,7 +198,7 @@ export default function CalendarPage() {
                           </SelectTrigger>
                           <SelectContent>
                             {uniqueCompanies.map(company => (
-                              <SelectItem key={company} value={company} className="text-xs">
+                              <SelectItem key={company} value={company || 'all'} className="text-xs">
                                 {company === 'all' ? 'Toutes les Entreprises' : company}
                               </SelectItem>
                             ))}

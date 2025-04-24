@@ -1,32 +1,24 @@
+import { AxiosError } from 'axios';
 import { BaseService, ApiResponse } from '../base/BaseService';
-import { z } from 'zod';
+import { User } from '../auth/AuthService';
 
-// Types
-interface CreateUserDTO {
-  nom: string;
-  prenom: string;
+export interface CreateUserData {
   email: string;
-  telephone: string;
   password: string;
-  role: 'admin' | 'user' | 'manager';
-  etablissementId: string;
+  name: string;
+  role: string;
+  etablissementId?: number;
 }
 
-interface User {
-  id: string;
-  nom: string;
-  prenom: string;
-  email: string;
-  telephone: string;
-  role: string;
-  etablissementId: string;
-  dateCreation: string;
-  dateModification?: string;
+export interface UpdateUserData {
+  email?: string;
+  name?: string;
+  role?: string;
+  etablissementId?: number;
 }
 
 class UserService extends BaseService {
   private static instance: UserService;
-  private readonly baseUrl = '/users';
 
   private constructor() {
     super();
@@ -39,30 +31,56 @@ class UserService extends BaseService {
     return UserService.instance;
   }
 
-  async createUser(data: CreateUserDTO): Promise<ApiResponse<User>> {
-    const response = await this.api.post<User>(this.baseUrl, data);
-    return {
-      data: response.data,
-      status: response.status
-    };
+  async createUser(userData: CreateUserData): Promise<ApiResponse<User>> {
+    try {
+      const response = await this.api.post<ApiResponse<User>>(
+        '/users',
+        userData
+      );
+      return response.data;
+    } catch (error) {
+      throw this.handleError(error as AxiosError);
+    }
   }
 
-  async updateUser(userId: string, data: Partial<CreateUserDTO>): Promise<ApiResponse<User>> {
-    const response = await this.api.patch<User>(`${this.baseUrl}/${userId}`, data);
-    return {
-      data: response.data,
-      status: response.status
-    };
+  async getUsers(): Promise<ApiResponse<User[]>> {
+    try {
+      const response = await this.api.get<ApiResponse<User[]>>('/users');
+      return response.data;
+    } catch (error) {
+      throw this.handleError(error as AxiosError);
+    }
   }
 
-  async deleteUser(userId: string): Promise<ApiResponse<void>> {
-    const response = await this.api.delete(`${this.baseUrl}/${userId}`);
-    return {
-      data: undefined,
-      status: response.status
-    };
+  async getUserById(id: number): Promise<ApiResponse<User>> {
+    try {
+      const response = await this.api.get<ApiResponse<User>>(`/users/${id}`);
+      return response.data;
+    } catch (error) {
+      throw this.handleError(error as AxiosError);
+    }
+  }
+
+  async updateUser(id: number, userData: UpdateUserData): Promise<ApiResponse<User>> {
+    try {
+      const response = await this.api.put<ApiResponse<User>>(
+        `/users/${id}`,
+        userData
+      );
+      return response.data;
+    } catch (error) {
+      throw this.handleError(error as AxiosError);
+    }
+  }
+
+  async deleteUser(id: number): Promise<ApiResponse<void>> {
+    try {
+      const response = await this.api.delete<ApiResponse<void>>(`/users/${id}`);
+      return response.data;
+    } catch (error) {
+      throw this.handleError(error as AxiosError);
+    }
   }
 }
 
-export const userService = UserService.getInstance();
-export default userService; 
+export default UserService.getInstance();

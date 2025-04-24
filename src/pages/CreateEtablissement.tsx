@@ -21,9 +21,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { toast } from '@/components/ui/use-toast';
+import { toast } from 'sonner';
 import { Building2, Phone, Mail, MapPin, Loader2 } from 'lucide-react';
-import { etablissementService } from '@/services/etablissement/etablissementService';
+import { EtablissementService } from '@/services/etablissement/EtablissementService';
 
 // Schéma de validation
 const etablissementSchema = z.object({
@@ -65,25 +65,36 @@ export default function CreateEtablissementPage() {
   const onSubmit = async (data: EtablissementFormValues) => {
     try {
       setIsSubmitting(true);
-      const result = await etablissementService.createEtablissement(data);
+      const formattedData = {
+        nom: data.nom,
+        typeEtablissement: data.type.toUpperCase() as 'HOPITAL' | 'CLINIQUE' | 'EHPAD' | 'CABINET_MEDICAL' | 'CENTRE_REEDUCATION',
+        adresse: `${data.adresse}, ${data.codePostal} ${data.ville}`,
+        emailContact: data.email,
+        telephoneContact: data.telephone,
+        responsableReferentId: 'default', // À remplacer par l'ID du responsable
+        siret: data.siret,
+        description: data.description
+      };
+      const result = await EtablissementService.getInstance().createEtablissement(formattedData);
       
-      toast({
-        title: 'Établissement créé avec succès!',
-        description: `L'établissement ${data.nom} a été créé.`,
+      toast.success('Établissement créé avec succès', {
+        description: `L'établissement "${data.nom}" a été créé et enregistré dans la base de données.`,
+        duration: 5000,
       });
 
       // Redirection vers le tableau de bord après création
       navigate('/dashboard', { 
         state: { 
           message: 'Établissement créé avec succès',
-          etablissementId: result.id 
+          etablissementId: result.data.id 
         } 
       });
     } catch (error) {
-      toast({
-        title: 'Erreur',
-        description: error instanceof Error ? error.message : 'Une erreur est survenue lors de la création de l\'établissement.',
-        variant: 'destructive',
+      toast.error('Échec de la création', {
+        description: error instanceof Error 
+          ? `Une erreur est survenue : ${error.message}`
+          : 'Une erreur inattendue est survenue lors de la création de l\'établissement.',
+        duration: 7000,
       });
     } finally {
       setIsSubmitting(false);

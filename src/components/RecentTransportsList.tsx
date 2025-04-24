@@ -11,7 +11,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { TransportListItem } from "utils/types"; // Import the type
+import { TransportListItem } from "@/utils/types";
 
 // Define status colors (Tailwind classes)
 const statusColors: Record<TransportListItem['status'], string> = {
@@ -36,7 +36,7 @@ export const RecentTransportsList = ({ transports }: Props) => {
         const aValue = a[sortConfig.key!];
         const bValue = b[sortConfig.key!];
 
-        // Basic string/number comparison, might need refinement for specific types like time
+        if (aValue === undefined || bValue === undefined) return 0;
         if (aValue < bValue) {
           return sortConfig.direction === 'ascending' ? -1 : 1;
         }

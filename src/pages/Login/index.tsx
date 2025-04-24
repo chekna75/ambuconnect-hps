@@ -13,10 +13,10 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import { toast } from '@/components/ui/use-toast';
 import { Mail, Lock, Loader2 } from 'lucide-react';
+import { AuthService } from '@/services/auth/AuthService';
 import { useAuth } from '@/hooks/useAuth';
-import { authService } from '@/services/auth/authService';
+import { toast } from 'sonner';
 
 const loginSchema = z.object({
   email: z.string().email('Email invalide'),
@@ -43,11 +43,11 @@ export default function LoginPage() {
     try {
       setIsSubmitting(true);
       
+      const authService = AuthService.getInstance();
       const userData = await authService.login(data);
       login(userData);
 
-      toast({
-        title: 'Connexion réussie',
+      toast.success('Connexion réussie', {
         description: 'Vous êtes maintenant connecté.',
       });
 
@@ -55,10 +55,8 @@ export default function LoginPage() {
       const from = location.state?.from?.pathname || '/dashboard';
       navigate(from, { replace: true });
     } catch (error) {
-      toast({
-        title: 'Erreur',
+      toast.error('Erreur', {
         description: error instanceof Error ? error.message : 'Une erreur est survenue lors de la connexion.',
-        variant: 'destructive',
       });
     } finally {
       setIsSubmitting(false);

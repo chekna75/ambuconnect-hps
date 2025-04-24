@@ -1,8 +1,8 @@
 import { useState, useRef, useEffect } from 'react';
-import { useWebSocket } from '../../hooks/useWebSocket';
 import { EtablissementService } from '../../services/etablissement/EtablissementService';
 import { Message, MessageType } from '../../services/etablissement/types';
 import './Chat.css';
+import { useWebSocket } from '../hooks/useWebSocket';
 
 interface ChatProps {
   etablissementId: string;
@@ -83,7 +83,7 @@ export function Chat({ etablissementId, demandeId, className = '' }: ChatProps) 
       </div>
 
       <div className="messages-container">
-        {messages.map((message) => (
+        {messages.map((message: Message) => (
           <div
             key={message.id}
             className={`message ${getMessageTypeClass(message.type)}`}

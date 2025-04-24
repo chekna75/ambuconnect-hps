@@ -1,8 +1,8 @@
 import React from "react";
-import { RecentTransportsList } from "components/RecentTransportsList";
-import { DashboardLayout } from "components/DashboardLayout";
-import { StatCard } from "components/StatCard";
-import { DashboardStats, TransportListItem } from "utils/types";
+import { RecentTransportsList } from "@/components/RecentTransportsList";
+import { DashboardLayout } from "@/components/DashboardLayout";
+import { StatCard } from "@/components/StatCard";
+import { DashboardStats, TransportListItem } from "@/utils/types";
 import { Clock, CalendarCheck, CalendarClock, Percent, BarChartHorizontal, PlusCircle, CalendarDays } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
@@ -24,30 +24,30 @@ const mockRecentTransports: TransportListItem[] = [
     id: "T123",
     patientName: "Patient A",
     pickupTime: "10:30",
-    status: "Confirmé",
+    status: "Confirmed",
     assignedCompany: "Alpha MedTransport",
     pickupAddress: "123 Rue de l'Hôpital",
     dropoffAddress: "456 Rue de la Rééducation",
-    transportType: "Assis",
+    transportType: "Seated",
   },
   {
     id: "T124",
     patientName: "Patient B",
     pickupTime: "11:15",
-    status: "En attente",
+    status: "Pending",
     assignedCompany: "-",
     pickupAddress: "123 Rue de l'Hôpital",
     dropoffAddress: "789 Centre de Dialyse",
-    transportType: "Brancard",
+    transportType: "Stretcher",
   },
   {
     id: "T125",
     pickupTime: "13:00", // Anonymisé
-    status: "En attente",
+    status: "Pending",
     assignedCompany: "-",
     pickupAddress: "123 Rue de l'Hôpital",
     dropoffAddress: "321 Clinique Spécialisée",
-    transportType: "Assis",
+    transportType: "Seated",
   },
 ];
 

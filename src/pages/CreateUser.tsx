@@ -20,25 +20,31 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { toast } from '@/components/ui/use-toast';
 import { User, Phone, Mail, Lock, Building2, Loader2 } from 'lucide-react';
-import { etablissementService } from '@/services/etablissement/etablissementService';
 import userService from '@/services/user/userService';
+import { toast } from 'sonner';
+import { EtablissementService } from '@/services/etablissement/EtablissementService';
+
+type UserFormValues = {
+  nom: string;
+  prenom: string;
+  email: string;
+  telephone: string;
+  password: string;
+  confirmPassword: string;
+  role: string;
+  etablissementId: string;
+};
 
 const userSchema = z.object({
-  nom: z.string().min(2, 'Le nom doit contenir au moins 2 caractères'),
-  prenom: z.string().min(2, 'Le prénom doit contenir au moins 2 caractères'),
+  nom: z.string().min(1, 'Le nom est requis'),
+  prenom: z.string().min(1, 'Le prénom est requis'),
   email: z.string().email('Email invalide'),
   telephone: z.string()
     .regex(/^(?:(?:\+|00)33|0)\s*[1-9](?:[\s.-]*\d{2}){4}$/, 'Numéro de téléphone invalide'),
-  password: z.string()
-    .min(8, 'Le mot de passe doit contenir au moins 8 caractères')
-    .regex(/[A-Z]/, 'Le mot de passe doit contenir au moins une majuscule')
-    .regex(/[a-z]/, 'Le mot de passe doit contenir au moins une minuscule')
-    .regex(/[0-9]/, 'Le mot de passe doit contenir au moins un chiffre')
-    .regex(/[^A-Za-z0-9]/, 'Le mot de passe doit contenir au moins un caractère spécial'),
+  password: z.string().min(8, 'Le mot de passe doit contenir au moins 8 caractères'),
   confirmPassword: z.string(),
-  role: z.enum(['admin', 'user', 'manager'], {
+  role: z.string({
     required_error: 'Veuillez sélectionner un rôle',
   }),
   etablissementId: z.string({
@@ -48,8 +54,6 @@ const userSchema = z.object({
   message: 'Les mots de passe ne correspondent pas',
   path: ['confirmPassword'],
 });
-
-type UserFormValues = z.infer<typeof userSchema>;
 
 export default function CreateUserPage() {
   const navigate = useNavigate();
@@ -66,14 +70,18 @@ export default function CreateUserPage() {
   React.useEffect(() => {
     const loadEtablissements = async () => {
       try {
-        const data = await etablissementService.getEtablissements();
-        setEtablissements(data);
+        const data = await EtablissementService.getInstance().getEtablissements();
+        setEtablissements(data.data.map((etablissement) => ({
+          id: etablissement.id,
+          nom: etablissement.nom,
+          adresse: etablissement.adresse,
+          codePostal: etablissement.codePostal,
+          ville: etablissement.ville,
+          emailContact: etablissement.emailContact,
+          telephoneContact: etablissement.telephoneContact,
+        })));
       } catch (error) {
-        toast({
-          title: 'Erreur',
-          description: 'Impossible de charger la liste des établissements',
-          variant: 'destructive',
-        });
+        toast.error('Impossible de charger la liste des établissements');
       }
     };
 
@@ -84,25 +92,23 @@ export default function CreateUserPage() {
     try {
       setIsSubmitting(true);
       const { confirmPassword, ...userData } = data;
-      const result = await userService.createUser(userData);
+      const formattedUserData = {
+        ...userData,
+        name: userData.nom,
+        etablissementId: parseInt(userData.etablissementId, 10)
+      };
+      const result = await userService.createUser(formattedUserData);
       
-      toast({
-        title: 'Utilisateur créé avec succès!',
-        description: `L'utilisateur ${data.prenom} ${data.nom} a été créé.`,
-      });
+      toast.success(`L'utilisateur ${data.prenom} ${data.nom} a été créé.`);
 
       navigate('/dashboard', { 
         state: { 
           message: 'Utilisateur créé avec succès',
-          userId: result.id
+          userId: result.data.id
         } 
       });
     } catch (error) {
-      toast({
-        title: 'Erreur',
-        description: error instanceof Error ? error.message : 'Une erreur est survenue lors de la création de l\'utilisateur.',
-        variant: 'destructive',
-      });
+      toast.error(error instanceof Error ? error.message : 'Une erreur est survenue lors de la création de l\'utilisateur.');
     } finally {
       setIsSubmitting(false);
     }
@@ -172,10 +178,7 @@ export default function CreateUserPage() {
                   <FormItem>
                     <FormLabel>Email</FormLabel>
                     <FormControl>
-                      <div className="relative">
-                        <Mail className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
-                        <Input className="pl-10" placeholder="email@exemple.fr" {...field} />
-                      </div>
+                      <Input placeholder="Email" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -189,10 +192,7 @@ export default function CreateUserPage() {
                   <FormItem>
                     <FormLabel>Téléphone</FormLabel>
                     <FormControl>
-                      <div className="relative">
-                        <Phone className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
-                        <Input className="pl-10" placeholder="01 23 45 67 89" {...field} />
-                      </div>
+                      <Input placeholder="Téléphone" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -278,15 +278,19 @@ export default function CreateUserPage() {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Établissement</FormLabel>
-                    <Select onValueChange={field.onChange} defaultValue={field.value}>
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Sélectionnez un établissement" />
-                        </SelectTrigger>
-                      </FormControl>
+                    <Select
+                      value={field.value?.toString()}
+                      onValueChange={(value) => field.onChange(value)}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Sélectionnez un établissement" />
+                      </SelectTrigger>
                       <SelectContent>
                         {etablissements.map((etablissement) => (
-                          <SelectItem key={etablissement.id} value={etablissement.id}>
+                          <SelectItem 
+                            key={etablissement.id} 
+                            value={etablissement.id.toString()}
+                          >
                             {etablissement.nom}
                           </SelectItem>
                         ))}

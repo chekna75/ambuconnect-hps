@@ -1,9 +1,9 @@
 import React from "react";
-import { Header } from "components/Header";
-import { CTAButton } from "components/CTAButton";
 import { CheckCircle, Clock, Shield, Users, ChevronDown } from 'lucide-react';
 import { motion, Variants } from "framer-motion";
 import { useState } from "react";
+import { CTAButton } from "@/components/CTAButton";
+import { Header } from "@radix-ui/react-accordion";
 
 // Définition des couleurs principales
 const colors = {
