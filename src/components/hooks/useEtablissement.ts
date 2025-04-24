@@ -31,14 +31,36 @@ export const useEtablissement = (id?: string) => {
     }
   });
 
+  // Activer un établissement
+  const activerMutation = useMutation({
+    mutationFn: () => etablissementService.activerEtablissement(id!),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['etablissement', id] });
+      queryClient.invalidateQueries({ queryKey: ['etablissements'] });
+    }
+  });
+
+  // Désactiver un établissement
+  const desactiverMutation = useMutation({
+    mutationFn: () => etablissementService.desactiverEtablissement(id!),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['etablissement', id] });
+      queryClient.invalidateQueries({ queryKey: ['etablissements'] });
+    }
+  });
+
   return {
     etablissement: etablissement?.data,
     isLoading,
     error,
     create: createMutation.mutate,
     update: updateMutation.mutate,
+    activer: activerMutation.mutate,
+    desactiver: desactiverMutation.mutate,
     isCreating: createMutation.isPending,
-    isUpdating: updateMutation.isPending
+    isUpdating: updateMutation.isPending,
+    isActivating: activerMutation.isPending,
+    isDesactivating: desactiverMutation.isPending
   };
 };
 
@@ -59,4 +81,4 @@ export const useEtablissementStats = (id: string, params: StatsParams) => {
     queryKey: ['etablissement', id, 'stats', params],
     queryFn: () => etablissementService.getStats(id, params)
   });
-}; 
+};

@@ -24,6 +24,7 @@ import { User, Phone, Mail, Lock, Building2, Loader2 } from 'lucide-react';
 import userService from '@/services/user/userService';
 import { toast } from 'sonner';
 import { EtablissementService } from '@/services/etablissement/EtablissementService';
+import { RoleUtilisateur } from '@/services/user/types';
 
 type UserFormValues = {
   nom: string;
@@ -97,7 +98,17 @@ export default function CreateUserPage() {
         name: userData.nom,
         etablissementId: parseInt(userData.etablissementId, 10)
       };
-      const result = await userService.createUser(formattedUserData);
+      const result = await userService.createUser(
+        userData.etablissementId,
+        {
+          email: userData.email,
+          motDePasse: userData.password,
+          nom: userData.nom,
+          prenom: userData.prenom,
+          telephone: userData.telephone,
+          role: userData.role as RoleUtilisateur
+        }
+      );
       
       toast.success(`L'utilisateur ${data.prenom} ${data.nom} a été créé.`);
 

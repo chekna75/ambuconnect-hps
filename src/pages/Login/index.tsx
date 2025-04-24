@@ -14,8 +14,8 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Mail, Lock, Loader2 } from 'lucide-react';
-import { AuthService } from '@/services/auth/AuthService';
-import { useAuth } from '@/hooks/useAuth';
+import { authService } from '@/services/auth/authService';
+import { useAuth } from '@/components/hooks/useAuth';
 import { toast } from 'sonner';
 
 const loginSchema = z.object({
@@ -43,7 +43,6 @@ export default function LoginPage() {
     try {
       setIsSubmitting(true);
       
-      const authService = AuthService.getInstance();
       const userData = await authService.login(data);
       login(userData);
 

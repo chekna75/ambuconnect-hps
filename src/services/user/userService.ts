@@ -1,6 +1,6 @@
 import { AxiosError } from 'axios';
 import { BaseService, ApiResponse } from '../base/BaseService';
-import { User } from '../auth/AuthService';
+import { User } from '../auth/types';
 import { UtilisateurEtablissementDto, CreateUserResponse } from './types';
 
 export interface CreateUserData {

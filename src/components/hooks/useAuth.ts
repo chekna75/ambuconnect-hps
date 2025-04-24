@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { AuthService } from '@/services/auth/AuthService';
+import { authService } from '@/services/auth/authService';
 
 interface AuthState {
   user: any | null;
@@ -12,12 +12,10 @@ export const useAuth = create<AuthState>((set) => ({
   user: null,
   isAuthenticated: false,
   login: async (credentials) => {
-    const authService = AuthService.getInstance();
     const response = await authService.login(credentials);
-    set({ user: response.data, isAuthenticated: true });
+    set({ user: response.user, isAuthenticated: true });
   },
   logout: async () => {
-    const authService = AuthService.getInstance();
     await authService.logout();
     set({ user: null, isAuthenticated: false });
   },

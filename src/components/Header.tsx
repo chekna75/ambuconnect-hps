@@ -1,7 +1,7 @@
 import React, { useState, useTransition } from "react";
 import { useNavigate } from "react-router-dom";
 import { ChatPopover } from "./Chat/ChatPopover";
-import { useAuth } from "@/hooks/useAuth";
+import { useAuth } from "./hooks/useAuth";
 
 export interface Props {
   /** Optional classname to customize the header */

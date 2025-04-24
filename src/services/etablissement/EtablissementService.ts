@@ -143,4 +143,38 @@ export class EtablissementService extends BaseService {
       throw this.handleError(error as AxiosError);
     }
   }
+
+  async activerEtablissement(id: string): Promise<ApiResponse<Etablissement>> {
+    try {
+      const response = await this.api.put<ApiResponse<Etablissement>>(
+        `/etablissements/${id}/activer`
+      );
+      return response.data;
+    } catch (error) {
+      throw this.handleError(error as AxiosError);
+    }
+  }
+
+  async desactiverEtablissement(id: string): Promise<ApiResponse<Etablissement>> {
+    try {
+      const response = await this.api.put<ApiResponse<Etablissement>>(
+        `/etablissements/${id}/desactiver`
+      );
+      return response.data;
+    } catch (error) {
+      throw this.handleError(error as AxiosError);
+    }
+  }
+
+  async searchEtablissements(query: string): Promise<ApiResponse<Etablissement[]>> {
+    try {
+      const response = await this.api.get<ApiResponse<Etablissement[]>>(
+        '/etablissements/search',
+        { params: { q: query } }
+      );
+      return response.data;
+    } catch (error) {
+      throw this.handleError(error as AxiosError);
+    }
+  }
 }
